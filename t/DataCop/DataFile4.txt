@@ -1,0 +1,34 @@
+encode_record
+encode_field
+name1
+data1
+name2
+data2
+option file => DataFile1.tdb
+option flag => >
+option option6 => 6
+option option7 => 7
+
+option file => DataFile1.tdb
+option flag => >
+option option6 => 6
+option option7 => 7
+
+~-~
+encode_record
+encode_field
+name3
+data3
+name4
+data4
+option file => DataFile1.tdb
+option flag => >
+option option6 => 6
+option option7 => 7
+
+option file => DataFile1.tdb
+option flag => >
+option option6 => 6
+option option7 => 7
+
+~-~

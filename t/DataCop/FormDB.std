@@ -1,0 +1,372 @@
+
+
+
+File_Spec: Unix^
+UUT: DataCop/FileType/FormDB.pm^
+Revision: -^
+End_User: General Public^
+Author: http://www.SoftwareDiamonds.com support@SoftwareDiamonds.com^
+SVD: SVD::DataCop-DataFile^
+Template: STD/STD001.frm^
+Classification: None^
+Temp: temp.pl^
+Clean: FormDB.std^
+Demo: FormDB.d^
+STD: FormDB-STD.pm^
+Verify: FormDB.t^
+
+
+ T: 12^
+
+VO: ^
+ N: UUT not loaded^
+ A: my $loaded = $T->is_package_loaded('DataCop::FileType::FormDB')^
+ E:  ''^
+ok: 1^
+
+ N: Load UUT^
+ R: L<DataCop::FileType::FormDB/general [1] - load>^
+ S: $loaded^
+ C: my $errors = $T->load_package( 'DataCop::FileType::FormDB' )^
+ A: $errors^
+SE: ''^
+ok: 2^
+
+VO: ^
+ N: No pod errors^
+ R: L<DataCop::FileType::FormDB/general [2] - pod check>^
+ A: $T->pod_errors( 'DataCop::FileType::FormDB')^
+ E: 0^
+ok: 3^
+
+DO: ^
+ A: $T->fin( 'FormDB0.tdb' )^
+
+ C:
+    #######
+    # Test the lenient format.
+    #
+    unlink 'FormDBa1.tdb';
+    unlink 'FormDBr1.txt';
+    unlink 'FormDBa1.txt';
+
+    my $dbh_in = new DataCop::FileType::FormDB(flag=>'<', file=>'FormDB0.tdb');
+    my $dbh_out = new DataCop::FileType::FormDB(flag=>'>', file=>'FormDBa1.tdb');
+
+    my ($$record_p, $$fields_p) = ('','');
+    my $array_p = [];
+    while( $dbh_in->get_record($record_p) ) {
+        $dbh_in->decode_record($record_p,$fields_p);
+        $T->fout( 'FormDBr1.txt',$$fields_p . "\n~--~\n", {append=>1} );
+        $dbh_in->decode_field($fields_p, $array_p);
+        $T->fout( 'FormDBa1.txt',join("\n",@$array_p) . "\n~--~\n", {append=>1});
+        ($$record_p, $$fields_p) = ('','');
+        $dbh_out->encode_field( $array_p, $fields_p );
+        $dbh_out->encode_record( $fields_p, $record_p);
+        $dbh_out->put_record($record_p);
+        ($$record_p, $$fields_p) = ('','');
+    }
+
+    $dbh_out->finish();
+    $dbh_in->finish();
+^
+
+
+ R:
+     L<DataCop::FileType::FormDB/format [1] - separator strings>
+     L<DataCop::FileType::FormDB/format [2] - separator escapes>
+     L<DataCop::FileType::FormDB/format [3] - field names>
+     L<DataCop::FileType::FormDB/format [4] - field names>
+     L<DataCop::FileType::FormDB/format [5] - EON>
+     L<DataCop::FileType::FormDB/format [7] - Lenient EOD>
+     L<DataCop::FileType::FormDB/methods [4] - decode_record>
+     L<DataCop::FileType::FormDB/methods [6] - get_record>
+     L<DataCop::FileType::FormDB/methods [7] - get_record>
+^
+
+ N: Lenient Record^
+ A: $T->fin('FormDBr1.txt')^
+ E: $T->fin('FormDBr2.txt')^
+ok: 4^
+
+
+ R:
+     L<DataCop::FileType::FormDB/format [1] - separator strings>
+     L<DataCop::FileType::FormDB/format [2] - separator escapes>
+     L<DataCop::FileType::FormDB/format [3] - field names>
+     L<DataCop::FileType::FormDB/format [4] - field names>
+     L<DataCop::FileType::FormDB/format [5] - EON>
+     L<DataCop::FileType::FormDB/format [7] - Lenient EOD>
+     L<DataCop::FileType::FormDB/methods [2] - decode_field>
+^
+
+ N: Lenient Get Array^
+ A: $T->fin('FormDBa1.txt')^
+ E: $T->fin('FormDBa2.txt')^
+ok: 5^
+
+
+ R:
+     L<DataCop::FileType::FormDB/format [1] - separator strings>
+     L<DataCop::FileType::FormDB/format [2] - separator escapes>
+     L<DataCop::FileType::FormDB/format [3] - field names>
+     L<DataCop::FileType::FormDB/format [4] - field names>
+     L<DataCop::FileType::FormDB/format [5] - EON>
+     L<DataCop::FileType::FormDB/format [7] - Lenient EOD>
+     L<DataCop::FileType::FormDB/methods [1] - encode_field>
+     L<DataCop::FileType::FormDB/methods [3] - encode_record>
+     L<DataCop::FileType::FormDB/methods [5] - put_record>
+^
+
+ N: Lenient Put Array^
+ A: $T->fin('FormDBa1.tdb')^
+ E: $T->fin('FormDBa2.tdb')^
+ok: 6^
+
+DO: ^
+ A: $T->fin( 'FormDBs0.tdb' )^
+
+ C:
+    #######
+    # Test the strict format.
+    #
+    unlink 'FormDBa1.tdb';
+    unlink 'FormDBr1.txt';
+    unlink 'FormDBa1.txt';
+
+    $dbh_in = new DataCop::FileType::FormDB(flag=>'<', file=>'FormDBs0.tdb', strict=>1);
+    $dbh_out = new DataCop::FileType::FormDB(flag=>'>', file=>'FormDBa1.tdb', strict=>1);
+
+    ($$record_p, $$fields_p) = ('','');
+    while( $dbh_in->get_record($record_p) ) {
+        $dbh_in->decode_record($record_p);
+        $T->fout( 'FormDBr1.txt',$$record_p . "\n~--~\n", {append=>1} );
+        $dbh_in->decode_field($record_p, $array_p);
+        $T->fout( 'FormDBa1.txt',join("\n",@$array_p) . "\n~--~\n", {append=>1});
+        ($$record_p, $$fields_p) = ('','');
+        $dbh_out->encode_field( $array_p, $record_p );
+        $dbh_out->encode_record($record_p);
+        $dbh_out->put_record($record_p);
+        ($$record_p, $$fields_p) = ('','');
+    }
+
+
+    $dbh_out->finish();
+    $dbh_in->finish();
+^
+
+
+ R:
+     L<DataCop::FileType::FormDB/format [1] - separator strings>
+     L<DataCop::FileType::FormDB/format [2] - separator escapes>
+     L<DataCop::FileType::FormDB/format [3] - field names>
+     L<DataCop::FileType::FormDB/format [4] - field names>
+     L<DataCop::FileType::FormDB/format [5] - EON>
+     L<DataCop::FileType::FormDB/format [6] - Strict EOD>
+     L<DataCop::FileType::FormDB/methods [4] - decode_record>
+     L<DataCop::FileType::FormDB/methods [6] - get_record>
+     L<DataCop::FileType::FormDB/methods [7] - get_record>
+^
+
+ N: Strict Record^
+ A: $T->fin('FormDBr1.txt')^
+ E: $T->fin('FormDBr3.txt')^
+ok: 7^
+
+
+ R:
+     L<DataCop::FileType::FormDB/format [1] - separator strings>
+     L<DataCop::FileType::FormDB/format [2] - separator escapes>
+     L<DataCop::FileType::FormDB/format [3] - field names>
+     L<DataCop::FileType::FormDB/format [4] - field names>
+     L<DataCop::FileType::FormDB/format [5] - EON>
+     L<DataCop::FileType::FormDB/format [6] - Strict EOD>
+     L<DataCop::FileType::FormDB/methods [2] - decode_field>
+^
+
+ N: Strict Get Array^
+ A: $T->fin('FormDBa1.txt')^
+ E: $T->fin('FormDBa3.txt')^
+ok: 8^
+
+
+ R:
+     L<DataCop::FileType::FormDB/format [1] - separator strings>
+     L<DataCop::FileType::FormDB/format [2] - separator escapes>
+     L<DataCop::FileType::FormDB/format [3] - field names>
+     L<DataCop::FileType::FormDB/format [4] - field names>
+     L<DataCop::FileType::FormDB/format [5] - EON>
+     L<DataCop::FileType::FormDB/format [6] - Strict EOD>
+     L<DataCop::FileType::FormDB/methods [1] - encode_field>
+     L<DataCop::FileType::FormDB/methods [3] - encode_record>
+     L<DataCop::FileType::FormDB/methods [5] - put_record>
+^
+
+ N: Strict Put Array^
+ A: $T->fin('FormDBa1.tdb')^
+ E: $T->fin('FormDBa3.tdb')^
+ok: 9^
+
+
+ C:
+    #######
+    # Test the strict binary format.
+    #
+    unlink 'FormDBa1.tdb';
+    unlink 'FormDBh1.tdb';
+    unlink 'FormDBr1.txt';
+    unlink 'FormDBa1.txt';
+
+    $dbh_in = new DataCop::FileType::FormDB(flag=>'<', file=>'FormDBs0.tdb', strict=>1, binary=>1);
+    $dbh_out = new DataCop::FileType::FormDB(flag=>'>', file=>'FormDBa1.tdb', strict=>1, binary=>1);
+
+    ($$record_p, $$fields_p) = ('','');
+    while( $dbh_in->get_record($record_p) ) {
+        $dbh_in->decode_record($record_p, $record_p);
+        $T->fout( 'FormDBr1.txt',$$record_p . "\n~--~\n", {append=>1} );
+        $dbh_in->decode_field($record_p, $array_p);
+        $T->fout( 'FormDBa1.txt',join("\n",@$array_p) . "\n~--~\n", {append=>1});
+        ($$record_p, $$fields_p) = ('','');
+        $dbh_out->encode_field( $array_p, $record_p );
+        $dbh_out->encode_record( $record_p, $record_p);
+        $dbh_out->put_record($record_p);
+        ($$record_p, $$fields_p) = ('','');
+    }
+
+    $dbh_out->finish();
+    $dbh_in->finish();
+^
+
+
+ R:
+     L<DataCop::FileType::FormDB/format [1] - separator strings>
+     L<DataCop::FileType::FormDB/format [2] - separator escapes>
+     L<DataCop::FileType::FormDB/format [3] - field names>
+     L<DataCop::FileType::FormDB/format [4] - field names>
+     L<DataCop::FileType::FormDB/format [5] - EON>
+     L<DataCop::FileType::FormDB/format [6] - Strict EOD>
+     L<DataCop::FileType::FormDB/methods [4] - decode_record>
+     L<DataCop::FileType::FormDB/methods [6] - get_record>
+     L<DataCop::FileType::FormDB/methods [7] - get_record>
+^
+
+ N: Strict Binary Record^
+ A: $T->fin('FormDBr1.txt', {binary=>1})^
+ E: $T->fin('FormDBr4.txt', {binary=>1})^
+ok: 10^
+
+
+ R:
+     L<DataCop::FileType::FormDB/format [1] - separator strings>
+     L<DataCop::FileType::FormDB/format [2] - separator escapes>
+     L<DataCop::FileType::FormDB/format [3] - field names>
+     L<DataCop::FileType::FormDB/format [4] - field names>
+     L<DataCop::FileType::FormDB/format [5] - EON>
+     L<DataCop::FileType::FormDB/format [6] - Strict EOD>
+     L<DataCop::FileType::FormDB/methods [2] - decode_field>
+^
+
+ N: Strict Binary Get Array^
+ A: $T->fin('FormDBa1.txt', {binary=>1})^
+ E: $T->fin('FormDBa4.txt', {binary=>1})^
+ok: 11^
+
+
+ R:
+     L<DataCop::FileType::FormDB/format [1] - separator strings>
+     L<DataCop::FileType::FormDB/format [2] - separator escapes>
+     L<DataCop::FileType::FormDB/format [3] - field names>
+     L<DataCop::FileType::FormDB/format [4] - field names>
+     L<DataCop::FileType::FormDB/format [5] - EON>
+     L<DataCop::FileType::FormDB/format [6] - Strict EOD>
+     L<DataCop::FileType::FormDB/methods [1] - encode_field>
+     L<DataCop::FileType::FormDB/methods [3] - encode_record>
+     L<DataCop::FileType::FormDB/methods [5] - put_record>
+^
+
+ N: Strict Binary Put Array^
+ A: $T->fin('FormDBa1.tdb', {binary=>1})^
+ E: $T->fin('FormDBa4.tdb', {binary=>1})^
+ok: 12^
+
+
+ C:
+    #######
+    # Test the strict binary format.
+    #
+    unlink 'FormDBa1.tdb';
+    unlink 'FormDBh1.tdb';
+    unlink 'FormDBr1.txt';
+    unlink 'FormDBa1.txt';
+^
+
+
+
+
+See_Also: L<DataCop::FileType::FormDB>^
+
+Copyright:
+copyright © 2003 Software Diamonds.
+
+Software Diamonds permits the redistribution
+and use in source and binary forms, with or
+without modification, provided that the 
+following conditions are met: 
+
+=over 4
+
+=item 1
+
+Redistributions of source code, modified or unmodified
+must retain the above copyright notice, this list of
+conditions and the following disclaimer. 
+
+=item 2
+
+Redistributions in binary form must 
+reproduce the above copyright notice,
+this list of conditions and the following 
+disclaimer in the documentation and/or
+other materials provided with the
+distribution.
+
+=back
+
+SOFTWARE DIAMONDS, http://www.SoftwareDiamonds.com,
+PROVIDES THIS SOFTWARE 
+'AS IS' AND ANY EXPRESS OR IMPLIED WARRANTIES,
+INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT
+SHALL SOFTWARE DIAMONDS BE LIABLE FOR ANY DIRECT,
+INDIRECT, INCIDENTAL, SPECIAL,EXEMPLARY, OR 
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
+TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE,DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
+OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING USE OF THIS SOFTWARE, EVEN IF
+ADVISED OF NEGLIGENCE OR OTHERWISE) ARISING IN
+ANY WAY OUT OF THE POSSIBILITY OF SUCH DAMAGE.
+
+=for html
+<hr>
+<p><br>
+<!-- BLK ID="NOTICE" -->
+<!-- /BLK -->
+<p><br>
+<!-- BLK ID="OPT-IN" -->
+<!-- /BLK -->
+<p><br>
+<!-- BLK ID="EMAIL" -->
+<!-- /BLK -->
+<p><br>
+<!-- BLK ID="LOG_CGI" -->
+<!-- /BLK -->
+<p><br>
+^
+
+
+
+
+~-~

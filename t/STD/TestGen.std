@@ -1,0 +1,496 @@
+
+
+
+File_Spec: Unix^
+UUT: STD/TestGen.pm^
+Revision: -^
+End_User: General Public^
+Author: http://www.SoftwareDiamonds.com support@SoftwareDiamonds.com^
+SVD: SVD::Military-STD2167A^
+Template: STD/STD001.frm^
+Classification: None^
+Temp: temp.pl^
+Clean: TestGen.std^
+Demo: TestGen.d^
+STD: TestGen-STD.pm^
+Verify: TestGen.t^
+
+
+ T: 17^
+
+
+ C:
+    use vars qw($loaded);
+    use File::Glob ':glob';
+    use File::Copy;
+
+    my $test_results;
+    my $loaded = 0;
+    my @outputs;
+^
+
+VO: ^
+
+ C:
+    @outputs = bsd_glob( 'tg*1.*' );
+    unlink @outputs;
+    @outputs = bsd_glob( 'tg*1-STD.pm');
+    unlink @outputs;
+
+    #### 
+    #  Use the test software to generate the test of the test software
+    #   
+    #  tg -o="clean all" TestGen.std
+    # 
+    #  0 - series is used to generate an test case test script
+    #
+    #      generate all output files by 
+    #          tg -o=clean TestGen0.std TestGen1.std
+    #          tg -o=all TestGen1.std
+    #
+    #  1 - this is the actual value test case
+    #      thus, TestGen1.std is used to produce actual test results
+    #
+    #  2 - this series is the expected test results
+    # 
+    #
+    # make no residue outputs from last test series
+    #
+    #  unlink <tg1*.*>;  causes subsequent bsd_blog calls to crash
+    #
+^
+
+ N: UUT not loaded^
+ A: $loaded = $T->is_package_loaded('STD::TestGen')^
+ E:  ''^
+ok: 1^
+
+ N: Load UUT^
+ R: L<STD::TestGen/load [1]>^
+ S: $loaded^
+ C: my $errors = $T->load_package( 'STD::TestGen' )^
+ A: $errors^
+SE: ''^
+ok: 2^
+
+VO: ^
+ N: No pod errors^
+ R: L<STD::TestGen/pod check [2]>^
+ A: $T->pod_errors( 'STD::TestGen')^
+ E: 0^
+ok: 3^
+
+DO: ^
+ A: $T->fin('tgA0.std')^
+VO: ^
+
+ R:
+    L<STD::TestGen/clean file [2]>
+    L<STD::TestGen/clean file [3]>
+    L<STD::TestGen/clean file [4]>
+    L<STD::TestGen/clean file [5]>
+    L<STD::TestGen/file_out option [1]>
+^
+
+
+ C:
+    copy 'tg0.pm', 'tg1.pm';
+    copy 'tgA0.std', 'tgA1.std';
+    STD::TestGen->fgenerate('STD/tgA0.std', {fspec_in=>'Unix', output=>'clean', file_out=>'tgAx1.std'})
+^
+
+ A: $T->scrub_file_line($T->fin('tgAx1.std'))^
+ N: Clean source std with a todo list^
+ E: $T->scrub_file_line($T->fin('tgA2B.std'))^
+ok: 4^
+
+DO: ^
+ A: $T->fin('tgB0.std')^
+VO: ^
+
+ R:
+    L<STD::TestGen/clean file [2]>
+    L<STD::TestGen/clean file [3]>
+    L<STD::TestGen/clean file [4]>
+    L<STD::TestGen/clean file [5]>
+    L<STD::TestGen/file_out option [1]>
+^
+
+ C: STD::TestGen->fgenerate('STD/tgB0.std', {fspec_in=>'Unix', output=>'clean', file_out=>'tgBy1.std'})^
+ A: $T->fin('tgBy1.std')^
+ N: clean source std without a todo list^
+ E: $T->fin('tgB2.std')^
+ok: 5^
+
+
+ C:
+    #####
+    # Make sure there is no residue outputs hanging
+    # around from the last test series.
+    #
+    @outputs = bsd_glob( 'tg*1.*' );
+    unlink @outputs;
+    @outputs = bsd_glob( 'tg*1-STD.pm');
+    unlink @outputs;
+^
+
+ C: copy 'tgA0.std', 'tgA1.std'^
+DO: ^
+ A: $T->fin('tgA1.std')^
+ C: copy 'tg0.pm', 'tg1.pm'^
+DO: ^
+ A: $T->fin('tg1.pm')^
+ C: STD::TestGen->fgenerate('STD/tgA1.std', {fspec_in=>'Unix', output=>'clean all'} )^
+
+ R:
+    L<STD::TestGen/clean file [1]>
+    L<STD::TestGen/clean file [2]>
+    L<STD::TestGen/clean file [3]>
+    L<STD::TestGen/clean file [4]>
+    L<STD::TestGen/clean file [5]>
+^
+
+ A: $T->scrub_file_line($T->fin('tgA1.std'))^
+ N: Cleaned tgA1.std^
+ E: $T->scrub_file_line($T->fin('tgA2B.std'))^
+ok: 6^
+
+VO: ^
+
+ R:
+    L<STD::TestGen/STD file [1]>
+    L<STD::TestGen/STD file [2]>
+^
+
+ N: Generated tgA1-STD.std^
+ A: $T->scrub_date_version($T->fin('tgA1-STD.pm'))^
+ E: $T->scrub_date_version($T->fin('tgA2-STD.pm'))^
+ok: 7^
+
+VO: ^
+
+ R:
+    L<STD::TestGen/demo file [1]>
+    L<STD::TestGen/demo file [2]>
+^
+
+ C: $test_results = `perl tgA1.d`^
+ C: $T->fout('tgA1.txt', $test_results)^
+ A: $test_results^
+ N: Demonstration script^
+ E: $T->fin('tgA2A.txt')^
+ok: 8^
+
+VO: ^
+
+ R:
+    L<STD::TestGen/verify file [1]>
+    L<STD::TestGen/verify file [2]>
+    L<STD::TestGen/verify file [3]>
+^
+
+ C: $test_results = `perl tgA1.t`^
+ C: $T->fout('tgA1.txt', $test_results)^
+ A: $T->scrub_file_line($test_results)^
+ N: Generated and execute the test script^
+ E: $T->scrub_file_line($T->fin('tgA2B.txt'))^
+ok: 9^
+
+VO: ^
+
+ C:
+    #########
+    #
+    # Individual generate outputs using options
+    #
+    ########
+
+    #####
+    # Make sure there is no residue outputs hanging
+    # around from the last test series.
+    #
+    @outputs = bsd_glob( 'tg*1.*' );
+    unlink @outputs;
+    @outputs = bsd_glob( 'tg*1-STD.pm');
+    unlink @outputs;
+^
+
+ C: copy 'tg0.pm', 'tg1.pm'^
+ C: copy 'tgA0.std', 'tgA1.std'^
+
+ R:
+    L<STD::TestGen/clean file [1]>
+    L<STD::TestGen/clean file [2]>
+    L<STD::TestGen/clean file [3]>
+    L<STD::TestGen/clean file [4]>
+    L<STD::TestGen/clean file [5]>
+^
+
+ C: STD::TestGen->fgenerate('STD/tgA1.std', {fspec_in=>'Unix', output=>'clean'})^
+ A: $T->scrub_file_line($T->fin('tgA1.std'))^
+ N: Generate a clean file^
+ E: $T->scrub_file_line($T->fin('tgA2B.std'))^
+ok: 10^
+
+VO: ^
+
+ R:
+    L<STD::TestGen/STD file [1]>
+    L<STD::TestGen/STD file [2]>
+^
+
+ C: STD::TestGen->fgenerate('STD/tgA1.std', {fspec_in=>'Unix', output=>'STD'} )^
+ A: $T->scrub_date_version($T->fin('tgA1-STD.pm'))^
+ N: Generate a STD^
+ E: $T->scrub_date_version($T->fin('tgA2-STD.pm'))^
+ok: 11^
+
+
+ R:
+    L<STD::TestGen/demo file [1]>
+    L<STD::TestGen/demo file [2]>
+    L<STD::TestGen/replace [2]>
+^
+
+ C: STD::TestGen->fgenerate('STD/tgA1.std', {fspec_in=>'Unix', output=>'demo', replace => 1});^
+ A: $T->scrub_date_version($T->fin('tg1.pm'))^
+ N: Generate and replace a demonstration^
+ E: $T->scrub_date_version($T->fin('tg2B.pm'))^
+ok: 12^
+
+
+ R:
+    L<STD::TestGen/verify file [1]>
+    L<STD::TestGen/verify file [2]>
+    L<STD::TestGen/verify file [3]>
+    L<STD::TestGen/verify file [4]>
+    L<STD::TestGen/execute [3]>
+    L<STD::TestGen/execute [4]>
+^
+
+
+ C:
+    no warnings;
+    open SAVEOUT, ">&STDOUT";
+    use warnings;
+    open STDOUT, ">tgA1.txt";
+    STD::TestGen->fgenerate('STD/tgA1.std', {fspec_in=>'Unix', output=>'verify', run=>1, verbose=>1});
+    close STDOUT;
+    open STDOUT, ">&SAVEOUT";
+    
+    ######
+    # For some reason, test harness puts in a extra line when running u
+    # under the Active debugger on Win32. So just take it out.
+    # Also the script name is absolute which is site dependent.
+    # Take it out of the comparision.
+    #
+    $test_results = $T->fin('tgA1.txt');
+    $test_results =~ s/.*?1..9/1..9/; 
+    $test_results =~ s/------.*?\n(\s*\()/\n $1/s;
+    $T->fout('tgA1.txt',$test_results);
+^
+
+ A: $T->scrub_test_file($T->scrub_file_line($test_results))^
+ N: Generate and verbose test harness run test script^
+ E: $T->scrub_test_file($T->scrub_file_line($T->fin('tgA2C.txt')))^
+ok: 13^
+
+VO: ^
+
+ R:
+    L<STD::TestGen/verify file [1]>
+    L<STD::TestGen/verify file [2]>
+    L<STD::TestGen/verify file [3]>
+    L<STD::TestGen/execute [3]>
+^
+
+
+ C:
+    no warnings;
+    open SAVEOUT, ">&STDOUT";
+    use warnings;
+    open STDOUT, ">tgA1.txt";
+    $main::SIG{__WARN__}=\&__warn__; # kill pesty Format STDOUT and Format STDOUT_TOP redefined
+    STD::TestGen->fgenerate('STD/tgA1.std', {fspec_in=>'Unix', output=>'verify', run=>1});
+    $main::SIG{__WARN__}=\&CORE::warn;
+    close STDOUT;
+    open STDOUT, ">&SAVEOUT";
+
+    ######
+    # For some reason, test harness puts in a extra line when running u
+    # under the Active debugger on Win32. So just take it out.
+    # Also with absolute file, the file is chopped off, and see
+    # stuff that is site dependent. Need to take it out also.
+    #
+    $test_results = $T->fin('tgA1.txt');
+    $test_results =~ s/.*?FAILED/FAILED/; 
+    $test_results =~ s/(\)\s*\n).*?\n(\s*\()/$1$2/s;
+    $T->fout('TgA1.txt',$test_results);
+^
+
+ A: $test_results^
+ N: Generate and test harness run test script^
+ E: $T->fin('tgA2D.txt')^
+ok: 14^
+
+
+ R:
+    L<STD::TestGen/fspec_in option [5]>
+    L<STD::TestGen/fspec_out option [6]>
+^
+
+VO: Do not use in demo^
+
+ C:
+    STD::TestGen->fgenerate('STD/tgB0.std', 
+      {fspec_in=>'MSWin32', fspec_out=>'os2',  output=>'clean', 
+      file_out=>'tgB1.std'})
+^
+
+ A: $T->fin('tgB1.std')^
+ N: Change File Spec^
+ E: $T->fin('tgB2A.std')^
+ok: 15^
+
+
+ R:
+    L<STD::TestGen/fspec_in option [5]>
+    L<STD::TestGen/fspec_out option [6]>
+^
+
+VO: Do not use in demo^
+
+ C:
+    STD::TestGen->fgenerate('STD/tgB0.std', 
+      {fspec_in=>'os2', fspec_out=>'MacOS',  output=>'clean', 
+      file_out=>'tgB1.std'})
+^
+
+ A: $T->fin('tgB1.std')^
+ N: Change File Spec^
+ E: $T->fin('tgB2B.std')^
+ok: 16^
+
+ R: <STD::TestGen/dir-path option [7]>^
+VO: ^
+
+ C:
+    use File::Spec;
+    my (undef, $xdirs, undef) = File::Spec->splitpath( File::Spec->rel2abs(__FILE__) );
+    my @xdirs = File::Spec->splitdir($xdirs);
+    pop @xdirs;
+    pop @xdirs if $xdirs[-1] eq 't';
+    $xdirs = File::Spec->catdir( @xdirs );
+    STD::TestGen->fgenerate('STD/tgB0.std', 
+      {fspec_in=>'UNIX', dir_path => $xdirs, output=>'clean', 
+        file_out=>'tgBz1.std'})
+^
+
+ A: $T->fin('tgBz1.std')^
+ N: Add to search path^
+ E: $T->fin('tgB2.std')^
+ok: 17^
+
+
+ C:
+    sub __warn__ 
+    { 
+       my ($text) = @_;
+       return $text =~ /STDOUT/;
+       CORE::warn( $text );
+    };
+
+    #####
+    # Make sure there is no residue outputs hanging
+    # around from the last test series.
+    #
+    @outputs = bsd_glob( 'tg*1.*' );
+    unlink @outputs;
+    @outputs = bsd_glob( 'tg*1-STD.pm');
+    unlink @outputs;
+^
+
+
+
+
+
+See_Also:
+L<${UUT_PM}|${UUT_PM}>
+L<SVD for ${UUT_PM}|${SVD}>
+L<SVD DID|Military::SVD>
+L<STD DID|Military::STD>
+L<Tailoring of the STD DID|STD::STDtailor>
+L<Test Harness|Test::Harness>
+L<STD Automated Genaration|STD:TestGen>
+
+The web page http://perl.SoftwareDiamonds.com provides a list of educational
+and reference litature on the Perl Programming Language including
+Plain Old Documentation (POD)s
+^
+
+
+Copyright:
+copyright © 2003 Software Diamonds.
+
+Software Diamonds permits the redistribution
+and use in source and binary forms, with or
+without modification, provided that the 
+following conditions are met: 
+
+=over 4
+
+=item 1
+
+Redistributions of source code, modified or unmodified
+must retain the above copyright notice, this list of
+conditions and the following disclaimer. 
+
+=item 2
+
+Redistributions in binary form must 
+reproduce the above copyright notice,
+this list of conditions and the following 
+disclaimer in the documentation and/or
+other materials provided with the
+distribution.
+
+=back
+
+SOFTWARE DIAMONDS, http://www.SoftwareDiamonds.com,
+PROVIDES THIS SOFTWARE 
+'AS IS' AND ANY EXPRESS OR IMPLIED WARRANTIES,
+INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT
+SHALL SOFTWARE DIAMONDS BE LIABLE FOR ANY DIRECT,
+INDIRECT, INCIDENTAL, SPECIAL,EXEMPLARY, OR 
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
+TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE,DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
+OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING USE OF THIS SOFTWARE, EVEN IF
+ADVISED OF NEGLIGENCE OR OTHERWISE) ARISING IN
+ANY WAY OUT OF THE POSSIBILITY OF SUCH DAMAGE.
+
+=for html
+<hr>
+<p><br>
+<!-- BLK ID="NOTICE" -->
+<!-- /BLK -->
+<p><br>
+<!-- BLK ID="OPT-IN" -->
+<!-- /BLK -->
+<p><br>
+<!-- BLK ID="EMAIL" -->
+<!-- /BLK -->
+<p><br>
+<!-- BLK ID="LOG_CGI" -->
+<!-- /BLK -->
+<p><br>
+^
+
+
+
+
+~-~

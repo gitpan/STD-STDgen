@@ -1,0 +1,96 @@
+
+
+UUT: STD/tg1.pm^
+Revision: -^
+End_User: General Public^
+Author: http://www.SoftwareDiamonds.com support@SoftwareDiamonds.com^
+SVD: None^
+Template: STD/STD001.frm^
+Classification: None^
+Clean: tgA1.std^
+Demo: tgA1.d^
+STD: tgA1-STD.pm^
+Verify: tgA1.t^
+
+ T: 0^
+
+ N: Pass test^
+ R: L<STD::t::tg1/capability-A [1]>^
+ C: my $x = 2^
+ C: my $y = 3^
+ A: $x + $y^
+SE: '5'^
+
+ N: Todo test that passes^
+ U: xy feature^
+ A: ($x+$y,$y-$x)^
+ E: '5','1'^
+
+ R: 
+    L<STD::t::tg1/capability-A [2]>
+    L<STD::t::tg1/Capability-B [1]>
+ ^
+ N: Test that fails^
+ A: ($x+4,$x*$y)^
+ E: '6','5'^
+
+ N: Skipped tests^
+ S: 1^
+ A: $x*$y*2^
+ E: '6'^
+
+ N: Todo Test that Fails^
+ U: zyw feature^
+ S: 0^
+ A: $x*$y*2^
+ E: '6'^
+
+ N: demo only^
+DO: demo only^
+ A: $x^
+
+ N: verify only^
+VO: verify only^
+ A: $x + 200^
+ E: 202^ 
+
+ N: test inside a loop
+ C: 
+    my $i;
+    for( $i=0; $i<2; $i++) {
+ ^
+
+ A: $i^
+ E: $i^    
+
+ C: }; ^
+
+ N: Failed test that skips the rest^
+ R: L<STD::t::tg1/Capability-B [2]>^
+ A: $x + $y^
+SE: '6'^
+
+ N: A test to skip^
+ A: $x + $y + $x^
+ E: '9'^
+
+ N: A not skip to skip^
+ S: 0^
+ R: L<STD::t::tg1/Capability-B [3]>^
+ A: $x + $y + $x + $y^
+ E: '10'^
+
+ N: A skip to skip^
+ S: 1^
+ R: L<STD::t::tg1/Capability-B [3]>^
+ A: $x + $y + $x + $y + $x^
+ E: '10'^
+
+See_Also: 
+http://perl.softwarediamonds.com
+L<STD::t::tg1>
+^
+
+Copyright: Public Domain^
+
+

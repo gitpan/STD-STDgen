@@ -1,0 +1,124 @@
+
+
+
+File_Spec: Unix^
+UUT: STD/tg1.pm^
+Revision: -^
+End_User: General Public^
+Author: http://www.SoftwareDiamonds.com support@SoftwareDiamonds.com^
+SVD: None^
+Template: STD/STD001.frm^
+Classification: None^
+Temp: temp.pl^
+Clean: tgA1.std^
+Demo: tgA1.d^
+STD: tgA1-STD.pm^
+Verify: tgA1.t^
+
+
+ T: 16 - 2,5^
+
+ N: Pass test^
+ R: L<STD::t::tg1/capability-A [1]>^
+ C: my $x = 2^
+ C: my $y = 3^
+ A: $x + $y^
+SE: '5'^
+ok: 1^
+
+ N: Todo test that passes^
+ U: xy feature^
+ A: ($x+$y,$y-$x)^
+ E: '5','1'^
+ok: 2^
+
+
+ R:
+    L<STD::t::tg1/capability-A [2]>
+    L<STD::t::tg1/Capability-B [1]>
+^
+
+ N: Test that fails^
+ A: ($x+4,$x*$y)^
+ E: '6','5'^
+ok: 3^
+
+ N: Skipped tests^
+ S: 1^
+ A: $x*$y*2^
+ E: '6'^
+ok: 4^
+
+ N: Todo Test that Fails^
+ U: zyw feature^
+ S: 0^
+ A: $x*$y*2^
+ E: '6'^
+ok: 5^
+
+ N: demo only^
+DO: ^
+ A: $x^
+ E: $y^
+ N: verify only^
+VO: ^
+ A: $x^
+ E: $x^
+ok: 6^
+
+ N: Test loop^
+
+ C:
+    my @expected = ('200','201','202');
+    my $i;
+    for( $i=0; $i < 3; $i++) {
+^
+
+ A: $i+200^
+ E: $expected[$i]^
+ok: 7,9,11^
+
+ A: $i + ($x * 100)^
+ E: $expected[$i]^
+ok: 8,10,12^
+
+ C:     };^
+ N: Failed test that skips the rest^
+ R: L<STD::t::tg1/Capability-B [2]>^
+ A: $x + $y^
+SE: '6'^
+ok: 13^
+
+ N: A test to skip^
+ A: $x + $y + $x^
+ E: '9'^
+ok: 14^
+
+ N: A not skip to skip^
+ S: 0^
+ R: L<STD::t::tg1/Capability-B [3]>^
+ A: $x + $y + $x + $y^
+ E: '10'^
+ok: 15^
+
+ N: A skip to skip^
+ S: 1^
+ R: L<STD::t::tg1/Capability-B [3]>^
+ A: $x + $y + $x + $y + $x^
+ E: '10'^
+ok: 16^
+
+
+
+
+
+See_Also:
+http://perl.softwarediamonds.com
+L<STD::t::tg1>
+^
+
+Copyright: Public Domain^
+
+
+
+~-~

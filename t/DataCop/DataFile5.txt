@@ -1,0 +1,116 @@
+test record 1
+binary => 1
+file => DataFile0.tdb
+flag => <
+option10 => 10
+option11 => 11
+get_record
+
+binary => 1
+file => DataFile0.tdb
+flag => <
+option10 => 10
+option11 => 11
+decode_record
+
+~-~
+fields
++--
+test record 1
+binary => 1
+file => DataFile0.tdb
+flag => <
+option10 => 10
+option11 => 11
+get_record
+
+binary => 1
+file => DataFile0.tdb
+flag => <
+option10 => 10
+option11 => 11
+decode_record
+
++--
+binary
++--
+1
++--
+file
++--
+DataFile0.tdb
++--
+flag
++--
+<
++--
+option10
++--
+10
++--
+option11
++--
+11
++--
+subroutine
++--
+decode_field
+~-~
+test record 2
+binary => 1
+file => DataFile0.tdb
+flag => <
+option10 => 10
+option11 => 11
+get_record
+
+binary => 1
+file => DataFile0.tdb
+flag => <
+option10 => 10
+option11 => 11
+decode_record
+
+~-~
+fields
++--
+test record 2
+binary => 1
+file => DataFile0.tdb
+flag => <
+option10 => 10
+option11 => 11
+get_record
+
+binary => 1
+file => DataFile0.tdb
+flag => <
+option10 => 10
+option11 => 11
+decode_record
+
++--
+binary
++--
+1
++--
+file
++--
+DataFile0.tdb
++--
+flag
++--
+<
++--
+option10
++--
+10
++--
+option11
++--
+11
++--
+subroutine
++--
+decode_field
+~-~

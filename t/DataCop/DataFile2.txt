@@ -1,0 +1,100 @@
+test record 1
+file => DataFile0.tdb
+flag => <
+option1 => 1
+option2 => 2
+get_record
+
+file => DataFile0.tdb
+flag => <
+option1 => 1
+option2 => 2
+decode_record
+
+~-~
+fields
++--
+test record 1
+file => DataFile0.tdb
+flag => <
+option1 => 1
+option2 => 2
+get_record
+
+file => DataFile0.tdb
+flag => <
+option1 => 1
+option2 => 2
+decode_record
+
++--
+file
++--
+DataFile0.tdb
++--
+flag
++--
+<
++--
+option1
++--
+1
++--
+option2
++--
+2
++--
+subroutine
++--
+decode_field
+~-~
+test record 2
+file => DataFile0.tdb
+flag => <
+option1 => 1
+option2 => 2
+get_record
+
+file => DataFile0.tdb
+flag => <
+option1 => 1
+option2 => 2
+decode_record
+
+~-~
+fields
++--
+test record 2
+file => DataFile0.tdb
+flag => <
+option1 => 1
+option2 => 2
+get_record
+
+file => DataFile0.tdb
+flag => <
+option1 => 1
+option2 => 2
+decode_record
+
++--
+file
++--
+DataFile0.tdb
++--
+flag
++--
+<
++--
+option1
++--
+1
++--
+option2
++--
+2
++--
+subroutine
++--
+decode_field
+~-~

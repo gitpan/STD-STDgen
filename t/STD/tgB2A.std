@@ -1,0 +1,45 @@
+
+
+
+File_Spec: os2^
+UUT: STD/tg1.pm^
+Revision: -^
+End_User: General Public^
+Author: http://www.SoftwareDiamonds.com support@SoftwareDiamonds.com^
+SVD: None^
+Template: STD/STD001.frm^
+Classification: None^
+Temp: temp.pl^
+Clean: tg1B.std^
+Demo: tg1B.d^
+STD: tg1B-STD.pm^
+Verify: tg1B.t^
+
+
+ T: 2^
+
+ R: L<STD::t::tg1/capability-A [1]>^
+ C: my $x = 2^
+ C: my $y = 3^
+ A: $x + $y^
+SE: '5'^
+ok: 1^
+
+ A: ($x+$y,$y-$x)^
+ E: '5','1'^
+ok: 2^
+
+
+
+
+
+See_Also:
+http://perl.softwarediamonds.com
+L<STD::t::tg1>
+^
+
+Copyright: Public Domain^
+
+
+
+~-~

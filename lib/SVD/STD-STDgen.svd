@@ -1,0 +1,267 @@
+SVD_FILE: lib/SVD/STD-STDgen.svd^
+VERSION : 0.02^
+TOP_DIR: ../..^
+REPOSITORY_DIR: packages^
+FREEZE: 0^
+
+PREVIOUS_RELEASE: 0.01^
+AUTHOR  : SoftwareDiamonds.com E<lt>support@SoftwareDiamonds.comE<gt>^
+ABSTRACT: Software to generate Software Test Description (STD) documents and test scripts from a test database file.^
+REVISION: A^
+TITLE   : Software Tests and Software Test Description (STD) Automation^
+END_USER: General Public^
+COPYRIGHT: copyright © 2003 Software Diamonds^
+CLASSIFICATION: NONE^
+REPOSITORY: http://www.softwarediamonds/packages^
+TEMPLATE: lib/SVD/SVD001.frm^
+CSS: help.css^
+
+COMPRESS: gzip^
+COMPRESS_SUFFIX: gz^
+
+RESTRUCTURE:
+   open PM,"< lib\\SVD\\STD_STDgen.pm";
+   my $data = join '',<PM>;
+   close PM;
+   $data =~ s/Military_STD2167A/STD_STDgen/;
+   open PM,"> lib\\SVD\\STD_STDgen.pm";
+   print PM $data;
+   close PM;
+   
+^
+
+AUTO_REVISE:
+lib/STD/*
+lib/STD/GenType/*
+lib/DataCop/DataFile.pm
+lib/DataCop/DataFileI.pm
+lib/DataCop/FileType/FormDB.pm
+t/DataCop/DataFile*
+t/DataCop/FormDB*
+t/STD/*
+bin/tg.pl
+^
+
+PREREQ_PM:
+'MILITARY::STD490A' => 0,
+'MILITARY::STD' => 0,
+^
+
+TESTS:
+t/DataCop/DataFile.t
+t/DataCop/FormDB.t
+t/STD/*.t
+^
+
+CHANGES:
+Changes are as follows:
+
+=over 4
+
+=item t/STD/tgA0.std changes
+
+Added test for DO: field
+
+Added test for VO: field
+
+Added a loop around two A: and E: fields.
+
+=item STD/TestGen.pm changes
+
+Added requirements for DO: VO: and looping
+a test
+
+=item STD/Check.pm changes
+
+Added and revise code to make DO: VO: and
+looping work
+
+=item STD/Verify.pm changes
+
+Added and revise code to make DO: VO: and
+looping work
+
+=back
+^
+
+DOCUMENT_OVERVIEW:
+This document releases ${NAME} version ${VERSION}
+providing description of the inventory, installation
+instructions and other information necessary to
+utilize and track this release.
+^
+
+LICENSE:
+These files are a POD derived works from the hard copy public domain version
+freely distributed by the United States Federal Government.
+
+The original hardcopy version is always the authoritative document
+and any conflict between the original hardcopy version governs whenever
+there is any conflict. In more explicit terms, any conflict is a 
+transcription error in converting the origninal hard-copy version to
+this POD format. Software Diamonds assumes no responsible for such errors.
+
+Software Diamonds permits the redistribution
+and use in source and binary forms, with or
+without modification, provided that the 
+following conditions are met: 
+
+=over 4
+
+=item 1
+
+Redistributions of source code, modified or unmodified
+must retain the above copyright notice, this list of
+conditions and the following disclaimer. 
+
+=item 2
+
+Redistributions in binary form must 
+reproduce the above copyright notice,
+this list of conditions and the following 
+disclaimer in the documentation and/or
+other materials provided with the
+distribution.
+
+=back
+
+SOFTWARE DIAMONDS, http://www.SoftwareDiamonds.com,
+PROVIDES THIS SOFTWARE 
+'AS IS' AND ANY EXPRESS OR IMPLIED WARRANTIES,
+INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT
+SHALL SOFTWARE DIAMONDS BE LIABLE FOR ANY DIRECT,
+INDIRECT, INCIDENTAL, SPECIAL,EXEMPLARY, OR 
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
+TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE,DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
+OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING USE OF THIS SOFTWARE, EVEN IF
+ADVISED OF NEGLIGENCE OR OTHERWISE) ARISING IN
+ANY WAY OUT OF THE POSSIBILITY OF SUCH DAMAGE.
+^
+
+
+INSTALLATION:
+The files may be installed under many different operating systems.
+The compresssed, archived, distribution file containing all installation
+files is at the following respository:
+
+ ${REPOSITORY}/${DISTNAME}-${VERSION}.tar.gz 
+
+Follow the general Perl software installation procedure
+to install the files contained in this distribution file.
+
+The distribution name for and version are as follows:
+
+ distribution name: ${DISTNAME}
+ version          : ${VERSION}
+
+^
+
+
+PROBLEMS:
+The open issures are as follows:
+
+=over 4
+
+=item *
+
+There is no requirement tracebility to a particular line
+in a file containing the expected results
+
+=item *
+
+There is no provisions for Software Development Document (SDD)
+design requirements and tracing functional requirements to
+design requirements and to design requirements tests
+
+=item *
+
+Functional requirements are basically requirements important
+to the end-user and stated for the point of view of the
+end-user.  
+Test coverage is not an issue. 
+However, when design requirements are added to the mix,
+test coverage of the design requirements becomes important.
+
+=back
+
+^
+
+SUPPORT:
+603 882-0846 E<lt>support@SoftwareDiamonds.comE<gt>
+^
+
+NOTES:
+The following are useful acronyms:
+
+=over 4
+
+=item .d
+
+extension for a Perl demo script file
+
+=item .pm
+
+extension for a Perl Library Module
+
+=item .t
+
+extension for a Perl test script file
+
+=item .svd
+
+extension for a Software Vesion Description database file
+
+=item DID
+
+Data Item Description
+
+=item POD
+
+Plain Old Documentation
+
+=item STD
+
+Software Test Description
+
+=item SVD
+
+Software Version Description
+
+=back
+^
+
+SEE_ALSO:
+L<Test|Test> L<Test::Harness|Test::Harness>
+L<STD::STDgen|STD::STDgen> L<DataCop::FileType::FormDB|DataCop::FileType::FormDB>
+L<DataCop::DataFileI|DataCop::DataFileI>
+L<STD::STDtailor|STD::STDtailor>
+L<MILITARY::STD2167A|MILITARY::STD2167A>
+L<MILITARY::STD490A|MILITARY::STD490A>
+L<MILITARY::STD|MILITARY::STD>
+^
+
+HTML:
+<hr>
+<p><br>
+<!-- BLK ID="PROJECT_MANAGEMENT" -->
+<!-- /BLK -->
+<p><br>
+<!-- BLK ID="NOTICE" -->
+<!-- /BLK -->
+<p><br>
+<!-- BLK ID="OPT-IN" -->
+<!-- /BLK -->
+<p><br>
+<!-- BLK ID="LOG_CGI" -->
+<!-- /BLK -->
+<p><br>
+^
+
+~-~
+
+

@@ -1,0 +1,248 @@
+
+
+
+File_Spec: Unix^
+UUT: DataCop/DataFile.pm^
+Revision: -^
+End_User: General Public^
+Author: http://www.SoftwareDiamonds.com support@SoftwareDiamonds.com^
+SVD: SVD::DataCop-DataFile^
+Template: STD/STD001.frm^
+Classification: None^
+Temp: temp.pl^
+Clean: DataFile.std^
+Demo: DataFile.d^
+STD: DataFile-STD.pm^
+Verify: DataFile.t^
+
+
+ T: 10^
+
+VO: ^
+ N: UUT not loaded^
+ A: my $loaded = $T->is_package_loaded('DataCop::DataFileI')^
+ E:  ''^
+ok: 1^
+
+ N: Load UUT^
+ R: L<DataCop::DataFile/general [1] - load>^
+ S: $loaded^
+ C: my $errors = $T->load_package( 'DataCop::DataFileI' )^
+ A: $errors^
+SE: ''^
+ok: 2^
+
+VO: ^
+ N: No pod errors^
+ R: L<DataCop::DataFile/general [2] - pod check>^
+ A: $T->pod_errors( 'DataCop::DataFile')^
+ E: 0^
+ok: 3^
+
+DO: ^
+ A: $T->fin( 'DataFile0.tdb' )^
+
+ C:
+    unlink 'DataFile1.txt';
+
+    my $record;
+    my ($array_p, $record_p) = ([], \$record);
+    my $dbh = new DataCop::DataFileI(flag => '<', file => 'DataFile0.tdb',
+               option1 => '1', option2 => '2' );
+
+    while( $dbh->get($array_p, $record_p) ) {
+        $T->fout( 'DataFile1.txt', $$record_p . "\n~--~\n", {append=>1});
+        $T->fout( 'DataFile1.txt', join("\n+--\n",@$array_p) . "\n~--~\n", {append=>1});
+    }
+^
+
+ N: get with record^
+ A: $T->fin('DataFile1.txt')^
+ E: $T->fin('DataFile2.txt')^
+ok: 4^
+
+
+ C:
+    unlink 'DataFile1.txt';
+    $dbh->finish();
+
+    $dbh = new DataCop::DataFileI(flag => '<', file => 'DataFile0.tdb',
+               option3 => '3', option4 => '4',  option5 => '5' );
+
+    while( $dbh->get($array_p) ) {
+        $T->fout( 'DataFile1.txt', join("\n+--\n",@$array_p) . "\n~--~\n", {append=>1});
+    }
+    $dbh->finish();
+^
+
+ N: get without record^
+ A: $T->fin('DataFile1.txt')^
+ E: $T->fin('DataFile3.txt')^
+ok: 5^
+
+
+ C:
+    unlink 'DataFile1.txt';
+    unlink 'DataFile1.tdb';
+
+    $dbh = new DataCop::DataFileI(flag => '>', file => 'DataFile1.tdb',
+               option6 => '6', option7 => '7' );
+
+    my @db = ( [ 'name1','data1','name2','data2'], [ 'name3', 'data3', 'name4', 'data4' ] );  
+ 
+    foreach $array_p (@db) {
+        $record = ''; 
+        $dbh->put($array_p, $record_p);
+        $T->fout('DataFile1.txt', $$record_p . "\n~--~\n", {append=>1});
+    }
+    $dbh->finish();
+^
+
+ N: put with record^
+ A: $T->fin('DataFile1.tdb')^
+ E: $T->fin('DataFile2.tdb')^
+ok: 6^
+
+ A: $T->fin('DataFile1.txt')^
+ E: $T->fin('DataFile4.txt')^
+ok: 7^
+
+
+ C:
+    $dbh->finish();
+    unlink 'DataFile1.txt';
+    unlink 'DataFile1.tdb';
+
+    $dbh = new DataCop::DataFileI(flag => '>', file => 'DataFile1.tdb',
+               option8 => '8' );
+
+    @db = ( [ 'name5','data5','name6','data6'], [ 'name7', 'data7' ] );  
+ 
+    foreach $array_p (@db) { 
+        $dbh->put($array_p);
+    }
+    $dbh->finish();
+^
+
+ N: put with without record^
+ A: $T->fin('DataFile1.tdb')^
+ E: $T->fin('DataFile3.tdb')^
+ok: 8^
+
+
+ C:
+    unlink 'DataFile1.txt';
+    unlink 'DataFile1.tdb';
+
+    $dbh = new DataCop::DataFileI(flag => '>', file => 'DataFile1.tdb',
+              binary => 1, option9 => '9' );
+
+    @db = ( [ 'name5','data5','name6','data6'], [ 'name7', 'data7' ] );  
+ 
+    foreach $array_p (@db) { 
+        $dbh->put($array_p);
+    }
+    $dbh->finish();
+^
+
+ N: binary put with without record^
+ A: $T->fin('DataFile1.tdb')^
+ E: $T->fin('DataFile4.tdb')^
+ok: 9^
+
+
+ C:
+    unlink 'DataFile1.txt';
+    unlink 'DataFile1.tdb';
+
+    $dbh = new DataCop::DataFileI(flag => '<', file => 'DataFile0.tdb',
+               binary => 1, option10 => '10', option11 => '11' );
+
+    while( $dbh->get($array_p, $record_p) ) {
+        $T->fout( 'DataFile1.txt', $$record_p . "\n~--~\n", {append=>1});
+        $T->fout( 'DataFile1.txt', join("\n+--\n",@$array_p) . "\n~--~\n", {append=>1});
+    }
+    $dbh->finish();
+^
+
+ N: binary get with record^
+ A: $T->fin('DataFile1.txt')^
+ E: $T->fin('DataFile5.txt')^
+ok: 10^
+
+
+ C:
+    unlink 'DataFile1.txt';
+    unlink 'DataFile1.tdb';
+^
+
+
+
+
+See_Also: L<DataCop::DataFile>^
+
+Copyright:
+copyright © 2003 Software Diamonds.
+
+Software Diamonds permits the redistribution
+and use in source and binary forms, with or
+without modification, provided that the 
+following conditions are met: 
+
+=over 4
+
+=item 1
+
+Redistributions of source code, modified or unmodified
+must retain the above copyright notice, this list of
+conditions and the following disclaimer. 
+
+=item 2
+
+Redistributions in binary form must 
+reproduce the above copyright notice,
+this list of conditions and the following 
+disclaimer in the documentation and/or
+other materials provided with the
+distribution.
+
+=back
+
+SOFTWARE DIAMONDS, http://www.SoftwareDiamonds.com,
+PROVIDES THIS SOFTWARE 
+'AS IS' AND ANY EXPRESS OR IMPLIED WARRANTIES,
+INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT
+SHALL SOFTWARE DIAMONDS BE LIABLE FOR ANY DIRECT,
+INDIRECT, INCIDENTAL, SPECIAL,EXEMPLARY, OR 
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
+TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE,DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
+OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING USE OF THIS SOFTWARE, EVEN IF
+ADVISED OF NEGLIGENCE OR OTHERWISE) ARISING IN
+ANY WAY OUT OF THE POSSIBILITY OF SUCH DAMAGE.
+
+=for html
+<hr>
+<p><br>
+<!-- BLK ID="NOTICE" -->
+<!-- /BLK -->
+<p><br>
+<!-- BLK ID="OPT-IN" -->
+<!-- /BLK -->
+<p><br>
+<!-- BLK ID="EMAIL" -->
+<!-- /BLK -->
+<p><br>
+<!-- BLK ID="LOG_CGI" -->
+<!-- /BLK -->
+<p><br>
+^
+
+
+
+
+~-~
